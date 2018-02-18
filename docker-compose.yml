@@ -58,3 +58,6 @@ services:
         soft: 65536
         hard: 65536
 
+  elasticsearch_old_index_deletion:
+    build: ./elasticsearch_old_index_deletion
+
