@@ -4,7 +4,7 @@ services:
 
   hello-test:
     image: busybox
-    command: ['/bin/sh', '-c', 'while true; do echo hello world; sleep 10; done']
+    command: ['/bin/sh', '-c', 'while true; do echo "{ \"server\": \"hello\", \"message\": { \"type\": \"Info\", \"message\": \"world!!!\" } }"; sleep 10; done']
 
   logspout:
     image: gliderlabs/logspout:v3.2.4
@@ -17,9 +17,10 @@ services:
       - /var/run/docker.sock:/tmp/docker.sock
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:5.6.0
+    image: docker.elastic.co/logstash/logstash:6.2.2
     environment:
       - LOGSPOUT=ignore
+      - XPACK_WATCHER_ENABLED=false
       - XPACK_MONITORING_ENABLED=false
     volumes:
       - ./config/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
@@ -27,19 +28,17 @@ services:
       - elasticsearch
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:5.6.0
+    image: docker.elastic.co/kibana/kibana:6.2.2
     environment:
       - LOGSPOUT=ignore
       - ELASTICSEARCH_URL=http://elasticsearch:9200
-      - XPACK_MONITORING_ENABLED=false
-      - XPACK_SECURITY_ENABLED=false
     links:
       - elasticsearch
     ports:
       - 5601:5601
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.2
     environment:
       - LOGSPOUT=ignore
       - node.name=dev-log-kibana
